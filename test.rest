@@ -1,0 +1,89 @@
+### GET all books
+GET http://localhost:3000/books
+Content-Type: application/json
+
+###
+
+### GET book by ID
+GET http://localhost:3000/books/6833c08b301bb780e770ba7f
+Content-Type: application/json
+
+###
+
+### POST create a new book
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+  "title": "1984",
+  "author": "George Orwell",
+  "genre": "Dystopian",
+  "pages": 328,
+  "publishedDate": "1949-06-08",
+  "ISBN": "9780451524935",
+  "rating": 4.9
+}
+
+###
+
+### PUT update a book
+PUT http://localhost:3000/books/6833c08b301bb780e770ba7f
+Content-Type: application/json
+
+{
+  "title": "1984 (Updated)",
+  "author": "George Orwell",
+  "genre": "Science Fiction",
+  "pages": 350,
+  "publishedDate": "1949-06-08",
+  "ISBN": "9780451524935",
+  "rating": 4.8
+}
+
+###
+
+### DELETE a book
+DELETE http://localhost:3000/books/6833c08b301bb780e770ba7f
+Content-Type: application/json
+
+###
+
+### GET all authors
+GET http://localhost:3000/authors
+Content-Type: application/json
+
+###
+
+### GET author by ID
+GET http://localhost:3000/authors/6833c0a5301bb780e770ba87
+Content-Type: application/json
+
+###
+
+### POST create a new author
+POST http://localhost:3000/authors
+Content-Type: application/json
+
+{
+  "name": "George Orwell",
+  "birthdate": "1903-06-25",
+  "nationality": "British"
+}
+
+###
+
+### PUT update an author
+PUT http://localhost:3000/authors/6833c0a5301bb780e770ba87
+Content-Type: application/json
+
+{
+  "name": "George Orwell",
+  "birthdate": "1903-06-25",
+  "nationality": "English"
+}
+
+###
+
+### DELETE an author
+DELETE http://localhost:3000/authors/6833c0a5301bb780e770ba87
+Content-Type: application/json
