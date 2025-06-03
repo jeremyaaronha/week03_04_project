@@ -68,8 +68,8 @@ passport.deserializeUser((obj, done) => {
 });
 
 // Routes
-//app.use('/books', isAuthenticated, booksRoutes);
-//app.use('/authors', isAuthenticated, authorsRoutes);
+app.use('/books', booksRoutes);
+app.use('/authors', authorsRoutes);
 
 // Swagger UI with cookies enabled!
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
