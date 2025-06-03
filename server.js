@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo'); 
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 
@@ -19,24 +19,25 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://week03-04-project.onrender.com', // tu dominio en Render
+  origin: 'https://week03-04-project.onrender.com',
   credentials: true
 }));
 
 app.use(express.json());
 
-// Session middleware 
+// Session middleware
 app.use(session({
-  secret: 'supersecretkey', 
+  secret: 'supersecretkey',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URL, 
-    ttl: 14 * 24 * 60 * 60 // 14 días
+    mongoUrl: process.env.MONGODB_URL,
+    ttl: 14 * 24 * 60 * 60
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production', 
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'none' 
   }
 }));
 
@@ -65,31 +66,21 @@ passport.deserializeUser((obj, done) => {
 });
 
 // Routes
-app.use('/books', booksRoutes);
-app.use('/authors', authorsRoutes);
+app.use('/books', isAuthenticated, booksRoutes);
+app.use('/authors', isAuthenticated, authorsRoutes);
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// 🚀 Ruta base con links para login
-app.get('/', (req, res) => {
-  res.send(`
-    <h1>Library System API</h1>
-    <p><a href="/login">Login with GitHub</a></p>
-    <p><a href="/api-docs">Go to Swagger Docs</a></p>
-    <p><a href="/logout">Logout</a></p>
-  `);
-});
-
-// Login with GitHub
+// Login with GitHub (ruta directa /login)
 app.get('/login', passport.authenticate('github', { scope: [ 'user:email' ] }));
 
 // GitHub callback
-app.get('/github/callback', 
+app.get('/github/callback',
   passport.authenticate('github', { failureRedirect: '/' }),
   function(req, res) {
-    req.session.user = req.user; 
-    res.redirect('/api-docs'); 
+    req.session.user = req.user;
+    res.redirect('/api-docs');
   }
 );
 
