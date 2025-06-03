@@ -35,9 +35,9 @@ app.use(session({
     ttl: 14 * 24 * 60 * 60
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', 
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'none' 
+    sameSite: 'none'
   }
 }));
 
@@ -69,10 +69,14 @@ passport.deserializeUser((obj, done) => {
 app.use('/books', isAuthenticated, booksRoutes);
 app.use('/authors', isAuthenticated, authorsRoutes);
 
-// Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger UI with cookies enabled!
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: {
+    withCredentials: true
+  }
+}));
 
-// Login with GitHub (ruta directa /login)
+// Login with GitHub
 app.get('/login', passport.authenticate('github', { scope: [ 'user:email' ] }));
 
 // GitHub callback

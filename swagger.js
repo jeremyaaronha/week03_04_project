@@ -13,6 +13,11 @@ const options = {
     servers: [
       {
         url: 'https://week03-04-project.onrender.com',
+        description: 'Production (Render)'
+      },
+      {
+        url: 'http://localhost:3000',
+        description: 'Local (Development)'
       }
     ],
     components: {   
@@ -20,11 +25,11 @@ const options = {
         cookieAuth: {
           type: 'apiKey',
           in: 'cookie',
-          name: 'connect.sid', 
+          name: 'connect.sid',
         },
       },
     },
-    security: [     
+    security: [
       {
         cookieAuth: [],
       },
