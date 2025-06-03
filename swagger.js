@@ -15,8 +15,22 @@ const options = {
         url: 'http://localhost:3000',
       }
     ],
+    components: {   
+      securitySchemes: {
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'connect.sid', 
+        },
+      },
+    },
+    security: [     
+      {
+        cookieAuth: [],
+      },
+    ],
   },
-  apis: ['./routes/*.js'], 
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

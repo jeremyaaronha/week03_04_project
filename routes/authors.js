@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authorsController = require('../controllers/authors');
 const { validateAuthor } = require('../helpers/validateAuthor');
+const { isAuthenticated } = require('../middleware/authenticate');
 
 /**
  * @swagger
@@ -84,7 +85,7 @@ router.get('/:id', authorsController.getAuthorById);
  *       422:
  *         description: Validation error
  */
-router.post('/', validateAuthor, authorsController.createAuthor);
+router.post('/', isAuthenticated, validateAuthor, authorsController.createAuthor);
 
 /**
  * @swagger
@@ -113,7 +114,7 @@ router.post('/', validateAuthor, authorsController.createAuthor);
  *       404:
  *         description: Author not found
  */
-router.put('/:id', validateAuthor, authorsController.updateAuthor);
+router.put('/:id', isAuthenticated, validateAuthor, authorsController.updateAuthor);
 
 /**
  * @swagger
@@ -134,6 +135,6 @@ router.put('/:id', validateAuthor, authorsController.updateAuthor);
  *       404:
  *         description: Author not found
  */
-router.delete('/:id', authorsController.deleteAuthor);
+router.delete('/:id', isAuthenticated, authorsController.deleteAuthor);
 
 module.exports = router;

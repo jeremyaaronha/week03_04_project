@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const booksController = require('../controllers/books');
 const { validateBook } = require('../helpers/validateBook');
+const { isAuthenticated } = require('../middleware/authenticate');
 
 /**
  * @swagger
@@ -100,7 +101,7 @@ router.get('/:id', booksController.getBookById);
  *       422:
  *         description: Validation error
  */
-router.post('/', validateBook, booksController.createBook);
+router.post('/', isAuthenticated, validateBook, booksController.createBook);
 
 /**
  * @swagger
@@ -129,7 +130,7 @@ router.post('/', validateBook, booksController.createBook);
  *       404:
  *         description: Book not found
  */
-router.put('/:id', validateBook, booksController.updateBook);
+router.put('/:id', isAuthenticated, validateBook, booksController.updateBook);
 
 /**
  * @swagger
@@ -150,6 +151,6 @@ router.put('/:id', validateBook, booksController.updateBook);
  *       404:
  *         description: Book not found
  */
-router.delete('/:id', booksController.deleteBook);
+router.delete('/:id', isAuthenticated, booksController.deleteBook);
 
 module.exports = router;
