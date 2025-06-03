@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo'); 
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 
@@ -24,7 +25,15 @@ app.use(express.json());
 app.use(session({
   secret: 'supersecretkey', 
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URL, 
+    ttl: 14 * 24 * 60 * 60 // 14 días
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', 
+    httpOnly: true
+  }
 }));
 
 // Initialize passport
