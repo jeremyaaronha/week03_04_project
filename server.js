@@ -9,7 +9,6 @@ const { initDb } = require('./data/database');
 const booksRoutes = require('./routes/books');
 const authorsRoutes = require('./routes/authors');
 const { swaggerUi, swaggerSpec } = require('./swagger');
-
 const { isAuthenticated } = require('./middleware/authenticate');
 
 require('dotenv').config();
@@ -17,11 +16,15 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// CORS configurado para Render
+app.use(cors({
+  origin: 'https://week03-04-project.onrender.com',
+  credentials: true
+}));
+
 app.use(express.json());
 
-// Session middleware 
+// Session middleware con MongoStore
 app.use(session({
   secret: 'supersecretkey', 
   resave: false,
@@ -32,7 +35,8 @@ app.use(session({
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production', 
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'none' // Muy importante para Render
   }
 }));
 
@@ -51,7 +55,6 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-// Serialize user
 passport.serializeUser((user, done) => {
   done(null, user);
 });
@@ -61,8 +64,8 @@ passport.deserializeUser((obj, done) => {
 });
 
 // Routes
-app.use('/books', booksRoutes);
-app.use('/authors', authorsRoutes);
+app.use('/books', isAuthenticated, booksRoutes);
+app.use('/authors', isAuthenticated, authorsRoutes);
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -73,7 +76,6 @@ app.get('/login', passport.authenticate('github', { scope: [ 'user:email' ] }));
 app.get('/github/callback', 
   passport.authenticate('github', { failureRedirect: '/' }),
   function(req, res) {
-    // Successful login
     req.session.user = req.user; 
     res.redirect('/api-docs'); 
   }
@@ -90,7 +92,7 @@ app.get('/logout', (req, res, next) => {
 // Start server
 initDb().then(() => {
   app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-    console.log(`Swagger docs at http://localhost:${port}/api-docs`);
+    console.log(`Server running on https://week03-04-project.onrender.com`);
+    console.log(`Swagger docs at https://week03-04-project.onrender.com/api-docs`);
   });
 });
