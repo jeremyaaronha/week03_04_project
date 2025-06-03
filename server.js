@@ -9,6 +9,7 @@ const { initDb } = require('./data/database');
 const booksRoutes = require('./routes/books');
 const authorsRoutes = require('./routes/authors');
 const { swaggerUi, swaggerSpec } = require('./swagger');
+
 const { isAuthenticated } = require('./middleware/authenticate');
 
 require('dotenv').config();
@@ -16,15 +17,15 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS configurado para Render
+// Middleware
 app.use(cors({
-  origin: 'https://week03-04-project.onrender.com',
+  origin: 'https://week03-04-project.onrender.com', // tu dominio en Render
   credentials: true
 }));
 
 app.use(express.json());
 
-// Session middleware con MongoStore
+// Session middleware 
 app.use(session({
   secret: 'supersecretkey', 
   resave: false,
@@ -35,8 +36,7 @@ app.use(session({
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production', 
-    httpOnly: true,
-    sameSite: 'none' // Muy importante para Render
+    httpOnly: true
   }
 }));
 
@@ -55,6 +55,7 @@ passport.use(new GitHubStrategy({
   }
 ));
 
+// Serialize user
 passport.serializeUser((user, done) => {
   done(null, user);
 });
@@ -64,15 +65,26 @@ passport.deserializeUser((obj, done) => {
 });
 
 // Routes
-app.use('/books', isAuthenticated, booksRoutes);
-app.use('/authors', isAuthenticated, authorsRoutes);
+app.use('/books', booksRoutes);
+app.use('/authors', authorsRoutes);
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// 🚀 Ruta base con links para login
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Library System API</h1>
+    <p><a href="/login">Login with GitHub</a></p>
+    <p><a href="/api-docs">Go to Swagger Docs</a></p>
+    <p><a href="/logout">Logout</a></p>
+  `);
+});
+
 // Login with GitHub
 app.get('/login', passport.authenticate('github', { scope: [ 'user:email' ] }));
 
+// GitHub callback
 app.get('/github/callback', 
   passport.authenticate('github', { failureRedirect: '/' }),
   function(req, res) {
