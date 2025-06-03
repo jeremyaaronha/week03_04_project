@@ -17,6 +17,8 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
   origin: 'https://week03-04-project.onrender.com',
